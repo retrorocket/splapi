@@ -58,17 +58,31 @@ sub create_result_map(){
     return $result_map;
 }
 
+# in句を使用する
+sub create_ormap(){
+    my $query = shift;
+    my @list = split(/,/,$query,5);
+    my %hash;
+    my @elements = grep { ! $hash{ $_ }++ } @list;
+    my $length = @elements;
+    if($length < 2) {
+        return $query;
+    }
+    return { '$in' => \@elements };
+}
+
+
 # mongoに送るクエリのマップ
 sub create_query_map(){
     my $mode = shift;
     my $query = shift;
     my $query_map = {};
     if ($query->{rule} && $mode eq $GACHI) {
-        $query_map->{rule} = $query->{rule};
+        $query_map->{rule} = &create_ormap($query->{rule});
     }
     if ($query->{map}) {
         # mongoはmapsで登録してあるが、検索クエリは単数で探すのでmap
-        $query_map->{maps} = $query->{map};
+        $query_map->{maps} = &create_ormap($query->{map});
     }
     if($query->{team} && $mode eq $FES) {
         $query_map->{team} = $query->{team};
