@@ -185,10 +185,35 @@ sub all_get(){
     return \@result;
 }
 
+# 返却値が配列のもの
+sub array_get(){
+    my $mode = shift;
+    # MongoDB
+    my $client = MongoDB::MongoClient->new;
+    my $db = $client->get_database( $DBNAME );
+    my $collection = $db->get_collection( $mode );
+    my $all = $collection->find_one();
+    return $all->{$mode};
+}
+
 get '/' => sub {
     my $self = shift;
     return $self->render(template => 'index', format => 'html');
 } => 'index';
+
+get '/gachi/rules' => sub {
+    my $self = shift;
+    my $mode = "rules";
+    my $result = &array_get($mode);
+    return $self->render(json =>{$mode => $result});
+} => 'rules';
+
+get '/maps' => sub {
+    my $self = shift;
+    my $mode = "maps";
+    my $result = &array_get($mode);
+    return $self->render(json =>{$mode => $result});
+} => 'maps';
 
 get '/:mode' => sub {
     my $self = shift;
