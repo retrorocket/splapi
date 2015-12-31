@@ -215,6 +215,13 @@ get '/maps' => sub {
     return $self->render(json =>{$mode => $result});
 } => 'maps';
 
+get '/weapons' => sub {
+    my $self = shift;
+    my $mode = "weapons";
+    my $result = &array_get($mode);
+    return $self->render(json =>{$mode => $result});
+} => 'weapons';
+
 get '/:mode' => sub {
     my $self = shift;
     my $mode = $self->param('mode');
