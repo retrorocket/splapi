@@ -18,21 +18,39 @@ sub get_datetime(){
     my $element = shift;
     my $str = $element->string_value;
     $str =~ /(.+) ~ (.+)/;
-     my $strp = DateTime::Format::Strptime->new(
+    my $strp = DateTime::Format::Strptime->new(
         pattern   => '%Y/%m/%d %H:%M',
         time_zone => 'Asia/Tokyo',
     );
-    my ($year) = (localtime)[5];
+    # 現在時刻
+    my($mon,$year) = (localtime(time))[4..5];
     $year = $year + 1900;
+    $mon = $mon + 1;
+    
+    # パース
     my $start = $year."/".$1;
     my $end = $year."/".$2;
-    my $ret = {
-        start => $strp->parse_datetime($start),
-        end => $strp->parse_datetime($end)
-    };
-    unless(defined($ret->{start}) && defined($ret->{end})){
+    my $start_date = $strp->parse_datetime($start);
+    my $end_date = $strp->parse_datetime($end);
+    unless(defined($start_date) && defined($end_date)){
         die("Datetime is null.");
     }
+
+    # 年またぎ処理
+    if($mon == 12) {
+        if($start_date->month == 1){
+            $start_date->add(years => 1);
+        }
+        if($end_date->month == 1){
+            $end_date->add(years => 1);
+        }
+    }
+
+    my $ret = {
+        start => $start_date,
+        end => $end_date,
+    };
+
     return $ret;
 };
 
