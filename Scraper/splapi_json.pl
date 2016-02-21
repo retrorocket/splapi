@@ -43,13 +43,43 @@ my $json = decode_json($content);
 
 #print Dumper $json;
 
+## fes開催
 if($json->{festival}){
     print "fes!";
-    #fesのjson形式わからないので
-    my $retcode = system("perl /home/".$config->{user}."/perl/splapi/splapi.pl");
-    exit($retcode);
+    my $fes_result;
+    for my $elem (@{$json->{schedule}}) {
+        my $start_dt = &get_datetime($elem->{datetime_begin});
+        my $end_dt = &get_datetime($elem->{datetime_end});
+    
+        my @fes_stages;
+        for my $fes_stage (@{$elem->{stages}}){
+            push(@fes_stages, $fes_stage->{name});
+        }
+        
+        my @team;
+        push(@team, $elem->{team_alpha_name});
+        push(@team, $elem->{team_bravo_name});
+        
+        $fes_result = {
+            start => $start_dt,
+            end => $end_dt,
+            maps => \@fes_stages,
+            team => \@team
+        };
+    }
+    
+    # MongoDB
+    my $client = MongoDB::MongoClient->new;
+    my $db = $client->get_database( "splapi");
+    my $fes_collection = $db->get_collection( "fes" );
+
+    unless($fes_collection->find_one({start => $fes_result->{start}})) {
+        $fes_collection->insert($fes_result);
+    }
+    exit(0);
 }
 
+## 通常
 my @regular_list;
 my @gachi_list;
 
