@@ -50,7 +50,11 @@ if($json->{festival}){
     for my $elem (@{$json->{schedule}}) {
         my $start_dt = &get_datetime($elem->{datetime_begin});
         my $end_dt = &get_datetime($elem->{datetime_end});
-    
+
+        unless(defined($start_dt) && defined($end_dt)){
+            die("Datetime is null.");
+        }
+
         my @fes_stages;
         for my $fes_stage (@{$elem->{stages}}){
             push(@fes_stages, $fes_stage->{name});
