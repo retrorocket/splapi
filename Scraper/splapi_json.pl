@@ -37,7 +37,7 @@ $mech->submit_form(
     }
 );
 
-my $res = $mech->get('https://splatoon.nintendo.net/schedule.json');
+my $res = $mech->get('https://splatoon.nintendo.net/schedule.json?utf8=%E2%9C%93&locale=ja');
 my $content = $res->content;
 my $json = decode_json($content);
 
