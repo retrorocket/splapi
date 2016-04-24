@@ -451,10 +451,10 @@ mapパラメータはカンマ（,）で区切ることでOR検索をするこ�
 
 # Group stat.inkのAPIに対応した値を取得する
 
-## stat.inkのAPIに対応した値を取得する [GET /{match}/{time}?stat_ink=on]
+## ステージとルールの取得 [GET /{match}/{time}?stat_ink=on]
 
-各マッチの各開催ステージ取得用エンドポイントにおいて、
-stat_inkパラメータをonに指定した場合、マップ名とルール名に[stat.ink](https://stat.ink/)のAPIに対応した値をオブジェクトに設定して返却します。    
+各マッチの、各開催ステージ取得用エンドポイントにおいて、
+stat_inkパラメータをonに指定した場合、mapsとruleに[stat.ink](https://stat.ink/)のAPIに対応した値が設定されたオブジェクトを返却します。    
 stat_inkパラメータとdate, map, team等の各種パラメータは併用可能です。    
 stat.ink用の値に変換できなかった場合、500エラーを返却します。
 
