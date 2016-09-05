@@ -263,33 +263,33 @@ sub array_get(){
 }
 
 ### Routing ###
-get '/' => sub {
+get '/' =>  [format => 0] => sub {
     my $self = shift;
     return $self->render(template => 'index', format => 'html');
 } => 'index';
 
-get '/gachi/rules' => sub {
+get '/gachi/rules' => [format => 0] => sub {
     my $self = shift;
     my $mode = "rules";
     my $result = &array_get($mode);
     return $self->render(json =>{$mode => $result});
 } => 'rules';
 
-get '/maps' => sub {
+get '/maps' => [format => 0] => sub {
     my $self = shift;
     my $mode = "maps";
     my $result = &array_get($mode);
     return $self->render(json =>{$mode => $result});
 } => 'maps';
 
-get '/weapons' => sub {
+get '/weapons' => [format => 0] => sub {
     my $self = shift;
     my $mode = "weapons";
     my $result = &array_get($mode);
     return $self->render(json =>{$mode => $result});
 } => 'weapons';
 
-get '/:mode' => sub {
+get '/:mode' => [format => 0] => sub {
     my $self = shift;
     my $mode = $self->param('mode');
     my $query = $self->req->params->to_hash;
@@ -300,7 +300,7 @@ get '/:mode' => sub {
     return $self->render(json =>{'result' => $result});
 } => 'all';
 
-get '/:mode/:time' => sub {
+get '/:mode/:time' => [format => 0] => sub {
     my $self = shift;
     my $mode = $self->param('mode');
     my $time = $self->param('time');
