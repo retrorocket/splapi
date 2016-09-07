@@ -535,3 +535,11 @@ stat.ink用の値に変換できなかった場合、500エラーを返却しま
     + Body
 
             {"error": "Internal Server Error."}
+
++ Response 502 503 504  (application/json)
+
+    APIの実行サーバに何らかの異常が発生しています。しばらく経った後に再度アクセスしてもエラーが解消されない場合、管理者まで連絡してください。
+
+    + Body
+
+            {"error": "(any error message.)"}
