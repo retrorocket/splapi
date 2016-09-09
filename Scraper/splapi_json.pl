@@ -4,9 +4,8 @@ use strict;
 use warnings;
 use utf8;
 
-use WWW::Mechanize;
-#use Web::Scraper;
-#use Data::Dumper;
+use LWP::UserAgent;
+use HTTP::Request::Common;
 use JSON;
 use Date::Manip;
 use DateTime::Format::DateManip;
@@ -23,21 +22,42 @@ sub get_datetime(){
     return $dt;
 };
 
-my $mech = WWW::Mechanize->new();
 # Config::Pit読み込み
 my $config = pit_get( "splapi" );
 
-#ログイン
-$mech->get('https://splatoon.nintendo.net/schedule');
-$mech->follow_link( url_regex => qr/auth/i );
-$mech->submit_form(
-    fields => {
-        username => $config->{username},
-        password => $config->{password}
-    }
+# JSON取得
+## LWP::UserAgent設定
+my $ua = LWP::UserAgent->new;
+$ua->cookie_jar({file =>"cookie.txt", autosave=>1 });
+$ua->agent("splapi schedule getter (http://splapi.retrorocket.biz)");
+
+## 認証用URL取得
+my $req = POST( "https://splatoon.nintendo.net/users/auth/nintendo");
+my $res_location = $ua->request($req);
+my $location = $res_location->header('location');
+
+## 認証用パラメータ設定
+my $dummy_url = URI->new();
+$dummy_url->query_form(
+    'nintendo_authenticate' => '',
+    'nintendo_authorize' => '',
+    'scope' => '',
+    'lang' => 'ja-JP' ,
+    'username' => $config->{username},
+    'password' => $config->{password}
 );
 
-my $res = $mech->get('https://splatoon.nintendo.net/schedule.json?utf8=%E2%9C%93&locale=ja');
+## 認証用URLアクセス
+my $url = URI->new($location.$dummy_url->query);
+my $req_auth = POST( $url );
+my $res_auth = $ua->request($req_auth);
+
+## JSON取得
+my $location_auth = $res_auth->header('location');
+my $res_callback = $ua->get($location_auth);
+
+my $res = $ua->get('https://splatoon.nintendo.net/schedule.json?utf8=%E2%9C%93&locale=ja');
+
 my $content = $res->content;
 my $json = decode_json($content);
 
@@ -97,7 +117,7 @@ for my $elem (@{$json->{schedule}}) {
     }
 
     my $stages = $elem->{stages};
-    
+
     my @reg_map;
     for my $reg (@{$stages->{regular}}) {
         #print $reg->{name}."\n";
