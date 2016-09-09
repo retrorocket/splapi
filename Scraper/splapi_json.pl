@@ -5,7 +5,6 @@ use warnings;
 use utf8;
 
 use LWP::UserAgent;
-use HTTP::Request::Common;
 use JSON;
 use Date::Manip;
 use DateTime::Format::DateManip;
@@ -32,12 +31,11 @@ $ua->cookie_jar({file =>"cookie.txt", autosave=>1 });
 $ua->agent("splapi schedule getter (http://splapi.retrorocket.biz)");
 
 ## 認証用URL取得
-my $req = POST( "https://splatoon.nintendo.net/users/auth/nintendo");
-my $res_location = $ua->request($req);
+my $res_location = $ua->post("https://splatoon.nintendo.net/users/auth/nintendo");
 my $location = $res_location->header('location');
 
 ## 認証用パラメータ設定
-my $dummy_url = URI->new();
+my $dummy_url = URI->new;
 $dummy_url->query_form(
     'nintendo_authenticate' => '',
     'nintendo_authorize' => '',
@@ -49,8 +47,7 @@ $dummy_url->query_form(
 
 ## 認証用URLアクセス
 my $url = URI->new($location.$dummy_url->query);
-my $req_auth = POST( $url );
-my $res_auth = $ua->request($req_auth);
+my $res_auth = $ua->post($url);
 
 ## JSON取得
 my $location_auth = $res_auth->header('location');
@@ -120,7 +117,7 @@ for my $elem (@{$json->{schedule}}) {
 
     my @reg_map;
     for my $reg (@{$stages->{regular}}) {
-        #print $reg->{name}."\n";
+	#print $reg->{name}."\n";
         push(@reg_map, $reg->{name});
     }
     my $reg_content = {
@@ -132,7 +129,6 @@ for my $elem (@{$json->{schedule}}) {
     
     my @gachi_map;
     for my $gachi (@{$stages->{gachi}}) {
-        #print $reg->{name}."\n";
         push(@gachi_map, $gachi->{name});
     }
     my $gachi_content = {
@@ -162,3 +158,4 @@ for my $cont2 (@gachi_list){
     }
     $gachi->insert($cont2);
 }
+
