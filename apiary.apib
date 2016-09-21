@@ -529,6 +529,14 @@ stat.ink用の値に変換できなかった場合、500エラーを返却しま
     + Body
     
             {"error": "Not Found."}
+            
++ Response 429 (application/json)
+
+    APIのリクエスト数が処理可能な上限に達しました。
+    
+    + Body
+    
+            {"error": "Too Many Requests."}
 
 + Response 500 (application/json)
 
