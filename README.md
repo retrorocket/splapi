@@ -1,8 +1,3 @@
-# splapi
-
-[スプラトゥーンのステージ情報がとれるやつ（非公式）](http://splapi.retrorocket.biz/)  
-[splapi - スプラトゥーンのステージ情報がとれるやつ ・ Apiary](http://docs.splapi.apiary.io/#)
-
 ## スクリプト内容
 * Scraper
  - イカリングの出力するjsonからの内容をMongoDBに格納する。
